@@ -128,6 +128,7 @@ function template_control_richedit($editor_id, $smileyContainer = null, $bbcCont
 								sCode: ', JavaScriptEscape($tag['code']), ',
 								sBefore: ', JavaScriptEscape($tag['before']), ',
 								sAfter: ', isset($tag['after']) ? JavaScriptEscape($tag['after']) : 'null', ',
+								bOnOff: 0,
 								sDescription: ', JavaScriptEscape($tag['description']), '
 							}', empty($tag['isLast']) ? ',' : '';
 

@@ -569,6 +569,26 @@ smc_Editor.prototype.updateEditorControls = function()
 
 	// Since we're in WYSIWYG state, show the toggle button as active.
 	aAllCrumbs[aAllCrumbs.length] = 'toggle';
+	
+	// Determine button state taking clicked status in to account
+	for (var iButtonRowIndex = 0, iRowCount = this.opt.oBBCBox.opt.aButtonRows.length; iButtonRowIndex < iRowCount; iButtonRowIndex++)
+	{
+		for (var iButtonIndex = 0, iButtonCount = this.opt.oBBCBox.opt.aButtonRows[iButtonRowIndex].length; iButtonIndex < iButtonCount; iButtonIndex++)
+		{
+			var oCurButton = this.opt.oBBCBox.opt.aButtonRows[iButtonRowIndex][iButtonIndex];
+			var iIndex = aAllCrumbs.indexOf(oCurButton.sCode);
+			
+			if (oCurButton.bOnOff && iIndex == -1)
+			{
+				aAllCrumbs[aAllCrumbs.length] = oCurButton.sCode;
+			}
+			else if (oCurButton.bOnOff && aAllCrumbs.indexOf(oCurButton.sCode) != -1)
+			{
+				oCurButton.bOnOff = 0;
+				aAllCrumbs.splice(iIndex, 1);
+			}
+		}
+	}
 
 	this.opt.oBBCBox.setActive(aAllCrumbs);
 
@@ -1678,6 +1698,7 @@ smc_BBCButtonBox.prototype.handleButtonClick = function (oButtonImg)
 	var iButtonIndex = aMatches[2];
 	var oProperties = this.opt.aButtonRows[iButtonRowIndex][iButtonIndex];
 	oProperties.bIsActive = oButtonImg.bIsActive;
+	oProperties.bOnOff = !oProperties.bOnOff;
 
 	if ('sButtonClickHandler' in this.opt)
 		eval(this.opt.sButtonClickHandler + '(oProperties)');
@@ -1729,6 +1750,7 @@ smc_BBCButtonBox.prototype.emulateClick = function (sCode)
 			if (oCurControl.sType == 'button' && oCurControl.sCode == sCode)
 			{
 				eval(this.opt.sButtonClickHandler + '(oCurControl)');
+				oCurControl.bOnOff = !oCurControl.bOnOff;
 				return true;
 			}
 		}
