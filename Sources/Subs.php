@@ -2571,7 +2571,7 @@ function redirectexit($setLocation = '', $refresh = false)
 	if (!empty($modSettings['queryless_urls']) && (empty($context['server']['is_cgi']) || ini_get('cgi.fix_pathinfo') == 1 || @get_cfg_var('cgi.fix_pathinfo') == 1) && (!empty($context['server']['is_apache']) || !empty($context['server']['is_lighttpd']) || !empty($context['server']['is_litespeed'])))
 	{
 		if (defined('SID') && SID != '')
-			$setLocation = preg_replace('/^' . preg_quote($scripturl, '/') . '\?(?:' . SID . '(?:;|&|&amp;))((?:board|topic)=[^#]+?)(#[^"]*?)?$/e', "\$scripturl . '/' . strtr('\$1', '&;=', '//,') . '.html\$2?' . SID", $setLocation);
+			$setLocation = preg_replace('/^' . preg_quote($scripturl, '/') . '\?(?:' . SID . '(?:;|&|&amp;))((?:board|topic)=[^#]+?)(#[^"]*?)?$/e', "\$scripturl . '/' . strtr('\$1', '&;=', '//,') . '.html?' . SID . '\$2'", $setLocation);
 		else
 			$setLocation = preg_replace('/^' . preg_quote($scripturl, '/') . '\?((?:board|topic)=[^#"]+?)(#[^"]*?)?$/e', "\$scripturl . '/' . strtr('\$1', '&;=', '//,') . '.html\$2'", $setLocation);
 	}
@@ -3221,6 +3221,51 @@ function template_footer()
 	foreach (array_reverse($context['template_layers']) as $layer)
 		loadSubTemplate($layer . '_below', true);
 
+}
+
+/**
+ * Output the Javascript files
+ */
+function template_javascript($do_defered = false)
+{
+	global $context;
+
+	// Use this hook to minify/optimize Javascript files
+	call_integration_hook('pre_javascript_output');
+
+	foreach ($context['javascript_files'] as $filename => $options)
+		if ((!$do_defered && empty($options['defer'])) || ($do_defered && !empty($options['defer'])))
+			echo '
+		<script type="text/javascript" src="', $filename, '"></script>';
+
+	if (!empty($context['javascript_vars']))
+	{
+		echo '
+		<script type="text/javascript"><!-- // --><![CDATA[';
+
+		foreach ($context['javascript_vars'] as $key => $value)
+			echo '
+			var ', $key, ' = ', $value;
+
+		echo '
+		// ]]></script>';
+
+	}
+}
+
+/**
+ * Output the CSS files
+ */
+function template_css()
+{
+	global $context;
+
+	// Use this hook to minify/optimize CSS files
+	call_integration_hook('pre_css_output');
+
+	foreach ($context['css_files'] as $filename => $options)
+		echo '
+	<link rel="stylesheet" type="text/css" href="', $filename, '" />';
 }
 
 /**

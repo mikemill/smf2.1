@@ -137,12 +137,16 @@ function template_html_above()
 		var smf_member_id = "', $context['user']['id'], '";', $context['show_pm_popup'] ? '
 		var fPmPopup = function ()
 		{
-			if (confirm("' . $txt['show_personal_messages'] . '"))
-				window.open(smf_prepareScriptUrl(smf_scripturl) + "action=pm");
+			new smc_Popup({
+				heading: ' . JavaScriptEscape($txt['show_personal_messages_heading']) . ',
+				content: ' . JavaScriptEscape(sprintf($txt['show_personal_messages'], $context['user']['unread_messages'], $scripturl . '?action=pm')) . ',
+				icon: smf_images_url + \'/im_sm_newmsg.png\'
+			});
 		}
 		addLoadEvent(fPmPopup);' : '', '
 		var ajax_notification_text = "', $txt['ajax_in_progress'], '";
 		var ajax_notification_cancel_text = "', $txt['modify_cancel'], '";
+		var help_popup_heading_text = "', $txt['help_popup'], '";
 	// ]]></script>';
 
 	echo '
@@ -589,51 +593,6 @@ function template_button_strip($button_strip, $direction = '', $strip_options = 
 				implode('', $buttons), '
 			</ul>
 		</div>';
-}
-
-/**
- * Output the Javascript files
- */
-function template_javascript($do_defered = false)
-{
-	global $context;
-
-	// Use this hook to minify/optimize Javascript files
-	call_integration_hook('pre_javascript_output');
-
-	foreach ($context['javascript_files'] as $filename => $options)
-		if ((!$do_defered && empty($options['defer'])) || ($do_defered && !empty($options['defer'])))
-			echo '
-		<script type="text/javascript" src="', $filename, '"></script>';
-}
-
-/**
- * Output the Javascript vars
- */
-function template_javascript_vars()
-{
-	global $context;
-
-	call_integration_hook('pre_javascript_vars_output');
-
-	foreach ($context['javascript_vars'] as $key => $value)
-		echo '
-		var ', $key, ' = ', $value;
-}
-
-/**
- * Output the CSS files
- */
-function template_css()
-{
-	global $context;
-
-	// Use this hook to minify/optimize CSS files
-	call_integration_hook('pre_css_output');
-
-	foreach ($context['css_files'] as $filename => $options)
-		echo '
-	<link rel="stylesheet" type="text/css" href="', $filename, '" />';
 }
 
 ?>

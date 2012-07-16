@@ -185,7 +185,7 @@ function smf_main()
 	// Load the current theme.  (note that ?theme=1 will also work, may be used for guest theming.)
 	else
 		loadTheme();
-	
+
 	// Check if the user should be disallowed access.
 	is_not_banned();
 
@@ -231,10 +231,17 @@ function smf_main()
 	}
 	elseif (empty($_REQUEST['action']))
 	{
-		// Action and board are both empty... BoardIndex!
+		// Action and board are both empty... BoardIndex! Unless someone else wants to do something different.
 		if (empty($board) && empty($topic))
 		{
+			$call = '';
+			call_integration_hook('integrate_default_action', $call);
+			$call = strpos($call, '::') !== false ? explode('::', $call) : $call;
+			if (!empty($call) && is_callable($call))
+				return $call;
+
 			require_once($sourcedir . '/BoardIndex.php');
+
 			return 'BoardIndex';
 		}
 		// Topic is empty, and action is empty.... MessageIndex!

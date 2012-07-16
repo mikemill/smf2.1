@@ -625,6 +625,10 @@ function statPanel($memID)
 
 	$context['page_title'] = $txt['statPanel_showStats'] . ' ' . $user_profile[$memID]['real_name'];
 
+	// Is the load average too high to allow searching just now?
+	if (!empty($context['load_average']) && !empty($modSettings['loadavg_userstats']) && $context['load_average'] >= $modSettings['loadavg_userstats'])
+		fatal_lang_error('loadavg_userstats_disabled', false);
+
 	// General user statistics.
 	$timeDays = floor($user_profile[$memID]['total_time_logged_in'] / 86400);
 	$timeHours = floor(($user_profile[$memID]['total_time_logged_in'] % 86400) / 3600);
@@ -797,6 +801,9 @@ function statPanel($memID)
 
 	// Put it in the right order.
 	ksort($context['posts_by_time']);
+	
+	// Custom stats (just add a template_layer to add it to the template!)
+ 	call_integration_hook('integrate_profile_stats', array($memID));
 }
 
 /**

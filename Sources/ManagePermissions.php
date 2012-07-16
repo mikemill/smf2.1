@@ -1119,6 +1119,7 @@ function setPermissionLevel($level, $group, $profile = 'null')
 		'karma_edit',
 		'pm_read',
 		'pm_send',
+		'send_email_to_members',
 		'profile_view_any',
 		'profile_extra_own',
 		'profile_server_avatar',
@@ -1462,6 +1463,7 @@ function loadAllPermissions($loadType = 'classic')
 			'disable_censor' => array(false, 'general', 'disable_censor'),
 			'pm_read' => array(false, 'pm', 'use_pm_system'),
 			'pm_send' => array(false, 'pm', 'use_pm_system'),
+			'send_email_to_members' => array(false, 'pm', 'use_pm_system'),
 			'calendar_view' => array(false, 'calendar', 'view_basic_info'),
 			'calendar_post' => array(false, 'calendar', 'post_calendar'),
 			'calendar_edit' => array(true, 'calendar', 'post_calendar', 'moderate_general'),
@@ -1570,6 +1572,15 @@ function loadAllPermissions($loadType = 'classic')
 		$relabelPermissions['post_attachment'] = 'auto_approve_attachments';
 	}
 
+	// Are attachments enabled?
+	if (empty($modSettings['attachmentEnable']))
+	{
+		$hiddenPermissions[] = 'manage_attachments';
+		$hiddenPermissions[] = 'view_attachments';
+		$hiddenPermissions[] = 'post_unapproved_attachments';
+		$hiddenPermissions[] = 'post_attachment';
+	}
+
 	// Provide a practical way to modify permissions.
 	call_integration_hook('integrate_load_permissions', array(&$permissionGroups, &$permissionList, &$leftPermissionGroups, &$hiddenPermissions, &$relabelPermissions));
 
@@ -1672,24 +1683,24 @@ function loadAllPermissions($loadType = 'classic')
 			}
 		}
 		ksort($context['permissions'][$permissionType]['columns']);
-	}
 
-	// Check we don't leave any empty groups - and mark hidden ones as such.
-	foreach ($context['permissions'][$permissionType]['columns'] as $column => $groups)
-		foreach ($groups as $id => $group)
-		{
-			if (empty($group['permissions']))
-				unset($context['permissions'][$permissionType]['columns'][$column][$id]);
-			else
+		// Check we don't leave any empty groups - and mark hidden ones as such.
+		foreach ($context['permissions'][$permissionType]['columns'] as $column => $groups)
+			foreach ($groups as $id => $group)
 			{
-				$foundNonHidden = false;
-				foreach ($group['permissions'] as $permission)
-					if (empty($permission['hidden']))
-						$foundNonHidden = true;
-				if (!$foundNonHidden)
-					$context['permissions'][$permissionType]['columns'][$column][$id]['hidden'] = true;
+				if (empty($group['permissions']))
+					unset($context['permissions'][$permissionType]['columns'][$column][$id]);
+				else
+				{
+					$foundNonHidden = false;
+					foreach ($group['permissions'] as $permission)
+						if (empty($permission['hidden']))
+							$foundNonHidden = true;
+					if (!$foundNonHidden)
+						$context['permissions'][$permissionType]['columns'][$column][$id]['hidden'] = true;
+				}
 			}
-		}
+	}
 }
 
 /**
