@@ -301,7 +301,7 @@ function PlushSearch2()
 	$context['search_string_limit'] = 100;
 
 	loadLanguage('Search');
-	if (!isset($_REQUEST['xml']))
+	if (!isset($_REQUEST['xml']) && !isset($_REQUEST['json']))
 		loadTemplate('Search');
 	//If we're doing XML we need to use the results template regardless really.
 	else
