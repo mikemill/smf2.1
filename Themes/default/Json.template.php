@@ -75,4 +75,12 @@ function template_results()
 
 	echo json_encode($obj);
 }
+
+function template_quotefast()
+{
+	global $context, $settings, $options, $txt;
+
+	echo json_encode($context['quote']['xml']);
+}
+
 ?>

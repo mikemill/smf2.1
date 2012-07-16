@@ -2751,7 +2751,7 @@ function QuoteFast()
 	global $sourcedir, $smcFunc;
 
 	loadLanguage('Post');
-	if (!isset($_REQUEST['xml']))
+	if (!isset($_REQUEST['xml']) && !isset($_REQUEST['json']))
 		loadTemplate('Post');
 
 	include_once($sourcedir . '/Subs-Post.php');
