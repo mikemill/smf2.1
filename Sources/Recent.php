@@ -648,7 +648,8 @@ function UnreadTopics()
 		$context['sub_template'] = WIRELESS_PROTOCOL . '_recent';
 	else
 	{
-		loadTemplate('Recent');
+		if (!isset($_REQUEST['json']))
+			loadTemplate('Recent');
 		$context['sub_template'] = $_REQUEST['action'] == 'unread' ? 'unread' : 'replies';
 	}
 

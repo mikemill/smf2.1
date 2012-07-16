@@ -1586,6 +1586,13 @@ function loadTheme($id_theme = 0, $initialize = true)
 		loadTemplate('Xml');
 		$context['template_layers'] = array();
 	}
+	// Output is fully JSON, so no need for the index template.
+	elseif (isset($_REQUEST['json']))
+	{
+		loadLanguage('index+Modifications');
+		loadTemplate('Json');
+		$context['template_layers'] = array();
+	}
 	// These actions don't require the index template at all.
 	elseif (!empty($_REQUEST['action']) && in_array($_REQUEST['action'], $simpleActions))
 	{
