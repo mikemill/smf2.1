@@ -127,53 +127,56 @@ function QuickReply(oOptions)
 }
 
 // When a user presses quote, put it in the quick reply box (if expanded).
-QuickReply.prototype.quote = function (iMessageId, xDeprecated)
+QuickReply.prototype.quote = function (iMessageId)
 {
-	// Compatibility with older templates.
-	if (typeof(xDeprecated) != 'undefined')
-		return true;
-
 	if (this.bCollapsed)
 	{
-		window.location.href = smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=post;quote=' + iMessageId + ';topic=' + this.opt.iTopicId + '.' + this.opt.iStart;
-		return false;
+		// If the Quick Reply is collapsed just follow the link.
+		return true;
 	}
 	else
 	{
-		// Doing it the XMLhttp way?
-		if (window.XMLHttpRequest)
+		ajax_indicator(true);
+		if (this.bIsFull)
 		{
-			ajax_indicator(true);
-			if (this.bIsFull)
-				insertQuoteFast(iMessageId);
-			else
-				getXMLDocument(smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=quotefast;quote=' + iMessageId + ';xml', this.onQuoteReceived);
+			var editor = window['oEditorHandle_' + this.opt.postBoxName];
+			$.getJSON(
+				smf_scripturl,
+				{
+					action: "quotefast",
+					quote: iMessageId,
+					json: 1,
+					pb: this.opt.postBoxName,
+					mode: editor.bRichTextEnabled ? 1 : 0
+				},
+				function(quote)
+				{
+					editor.insertText(quote, false, true);
+					ajax_indicator(false);
+				}
+			);
 		}
-		// Or with a smart popup!
 		else
-			reqWin(smf_prepareScriptUrl(this.opt.sScriptUrl) + 'action=quotefast;quote=' + iMessageId, 240, 90);
+		{
+			$.get(
+				this.opt.sScriptUrl,
+				{
+					action: 'quotefast',
+					quote: iMessageId,
+					json: true
+				},
+				function(quote)
+				{
+					replaceText(quote, document.forms.postmodify.message)
+					ajax_indicator(false);
+				}
+			);
+		}
 
-		// Move the view to the quick reply box.
-		if (navigator.appName == 'Microsoft Internet Explorer')
-			window.location.hash = this.opt.sJumpAnchor;
-		else
-			window.location.hash = '#' + this.opt.sJumpAnchor;
+		$(window).scrollTop($('#' + this.opt.sJumpAnchor).offset().top);
 
 		return false;
 	}
-}
-
-// This is the callback function used after the XMLhttp request.
-QuickReply.prototype.onQuoteReceived = function (oXMLDoc)
-{
-	var sQuoteText = '';
-
-	for (var i = 0; i < oXMLDoc.getElementsByTagName('quote')[0].childNodes.length; i++)
-		sQuoteText += oXMLDoc.getElementsByTagName('quote')[0].childNodes[i].nodeValue;
-
-	replaceText(sQuoteText, document.forms.postmodify.message);
-
-	ajax_indicator(false);
 }
 
 // The function handling the swapping of the quick reply.

@@ -722,28 +722,8 @@ function template_main()
 			if (!empty($context['smileys']['postform']) || !empty($context['smileys']['popup']))
 				echo '
 							<div id="smileyBox_message"></div>';
-
 			echo '
-							', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message'), '
-							<script type="text/javascript"><!-- // --><![CDATA[
-								function insertQuoteFast(messageid)
-								{
-									if (window.XMLHttpRequest)
-										getXMLDocument(smf_prepareScriptUrl(smf_scripturl) + \'action=quotefast;quote=\' + messageid + \';xml;pb=', $context['post_box_name'], ';mode=\' + (oEditorHandle_', $context['post_box_name'], '.bRichTextEnabled ? 1 : 0), onDocReceived);
-									else
-										reqWin(smf_prepareScriptUrl(smf_scripturl) + \'action=quotefast;quote=\' + messageid + \';pb=', $context['post_box_name'], ';mode=\' + (oEditorHandle_', $context['post_box_name'], '.bRichTextEnabled ? 1 : 0), 240, 90);
-									return false;
-								}
-								function onDocReceived(XMLDoc)
-								{
-									var text = \'\';
-									for (var i = 0, n = XMLDoc.getElementsByTagName(\'quote\')[0].childNodes.length; i < n; i++)
-										text += XMLDoc.getElementsByTagName(\'quote\')[0].childNodes[i].nodeValue;
-									oEditorHandle_', $context['post_box_name'], '.insertText(text, false, true);
-
-									ajax_indicator(false);
-								}
-							// ]]></script>';
+							', template_control_richedit($context['post_box_name'], 'smileyBox_message', 'bbcBox_message');
 
 		}
 		echo '
@@ -791,7 +771,8 @@ function template_main()
 						sImageCollapsed: "collapse.png",
 						sImageExpanded: "expand.png",
 						sJumpAnchor: "quickreply",
-						bIsFull: ', !empty($options['display_quick_reply']) && $options['display_quick_reply'] > 2 ? 'true' : 'false', '
+						bIsFull: ', !empty($options['display_quick_reply']) && $options['display_quick_reply'] > 2 ? 'true' : 'false', ',
+						postBoxName: "', !empty($context['post_box_name']) ? $context['post_box_name'] : '', '"
 					});';
 
 	if (!empty($options['display_quick_mod']) && $options['display_quick_mod'] == 1 && $context['can_remove_post'])
