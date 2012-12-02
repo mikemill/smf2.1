@@ -5,7 +5,7 @@ Software by:
 * 2001-2006:      Lewis Media (http://www.lewismedia.com)
 
 
-Individual copyrights
+Individual copyrights:
 ===============================================================================
 Individual contributors hold the copyright to their contributions which are
 licensed under the terms of the LICENSE file.
