@@ -1,6 +1,6 @@
 Copyright (c) 2011-Present Simple Machines. All rights reserved.
 
-Developed by: Simple Machines Forum Project
+Developed by: Simple Machines Forum Project  
 Simple Machines  
 http://www.simplemachines.org  
 
